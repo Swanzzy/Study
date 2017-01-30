@@ -3,34 +3,99 @@
 "Revision History:
 "   2017-01-28 02:22 install plugin Vundle
 "   2017-01-29 22:26 optimize startup time
+"   2017-01-30 16:25 add plugin NERDTree
+"   2017-01-30 23:57 rejust global setting
 "============================================================
-syntax on                               "启用语法检查
-colorscheme evening                     "代码配色方案
-set nu                                  "开启行号
-set ruler                               "开启状态栏标尺
-"set cursorline                          "突出显示光标所在行
-set ts=4                                "设置tab为4个空格（输入tab以4个空格代替）
-set expandtab                           "读取tab也以4个空格代替（需配合上条使用）
-set shiftwidth=4                        "换行时行间交错使用4个空格
-set autoindent                          "自动对齐
-set smartindent                         "智能对齐
-set showmatch                           "设置匹配模式，如输入{自动匹配}
-set incsearch                           "即时搜索模式
-set backspace=2                         "安装V8.0后删除键失效
-                                        "http://www.wtoutiao.com/p/H19Ufd.html
-"set lazyredraw                          "在执行宏命令时，不进行显示重绘；
-                                        "在宏命令执行完成后，一次性重绘，以便提高性能。
-set encoding=utf-8                                       
-set hlsearch                            "设置高亮搜索(:noh可取消高亮)
-set showcmd                             "将输入的命令显示出来，便于查看当前输入的信息
-set history=100                         "设置vim存储的历史命令记录的条数
-set softtabstop=4                       "在按退格键时，如果前面有4个空格，则会统一清除
-set magic                               "设置magic,在正则匹配时可省略部分转义字符
-let mapleader=","                       "设置前导按键<leader>
+"ref
+"{
+"http://stevelosh.com/blog/2010/09/coming-home-to-vim/
+"http://blog.csdn.net/usbdrivers/article/details/8103964
+"http://www.cnblogs.com/ma6174/archive/2011/12/10/2283393.html
+"Ack:http://www.tuicool.com/articles/IveYNbe
+"}
+"" Get the defaults that most users want.
+source $VIMRUNTIME/defaults.vim
+
+set nocp                                "nocompatible:remove compatible features for vi
+"set noml                               "nomodelines:format for some special files
+set encoding=utf-8                      "enable utf-8 encode,this is refer to charset encoding,not files
+
+"for window
+"{
+set nu                                  "number:show line numbers
+"set rnu                                "show relative number
+"set cursorline                         "display current line
+"set cursorcolumn                       "display current column
+"set ruler                              "show the cursor position all the time
+set ls=2                                "laststatus:always show status line(default:1)"
+"}
+
+"for formatting
+"{
+set ts=4                                "tabstop:numbers of spaces of tab character
+set shiftwidth=4                        "numbers of spaces to (auto)indent
+set softtabstop=4                       "delete 4 spaces when [Backspace]
+set expandtab                           "tabs are converted to spaces,use only when rq
+set wrap
+set textwidth=79
+set fo=qrn1                             "formatoptions :help fo-table
+"set colorcolumn=85
+set autoindent                          "always set autoindenting on
+set cindent                             "to indent in code block when C programming
+set smartindent     
+"syntax on    
+colorscheme evening        
+"}
+
+"for searching/moving
+"{
+"set scrolloff=3                        "cursor distance for buffer top/bottom
+"set showmode                           "show NORMAL/INSERT..mode 
+set ttyfast                             "smoother changes
+nnoremap / /\v
+vnoremap / /\v
+set magic                               "for regular expression
+set ignorecase                          "ignore case when searching
+set smartcase
+set gdefault                            "instead of :%s/foo/bar/g you just type :%s/foo/bar/
+set incsearch                           "do incremental searching
+set showmatch                           "show matching braces,somewhat annoying...
+set hlsearch                            "higlight searches(:noh for cancel)
+"}
+
+"for editting/saving
+"{
+set hidden                              "allowed switching buffers with unsaved changes when 
+set undofile
+set nobackup
+set noswapfile
+set backspace=2                         "invalid when v8.0?
+"}
+
+"for map key
+"{
+"nnoremap <up> <nop>
+"nnoremap <down> <nop>
+"nnoremap <left> <nop>
+"nnoremap <right> <nop>
+"inoremap <up> <nop>
+"inoremap <down> <nop>
+"inoremap <left> <nop>
+"inoremap <right> <nop>
+"inoremap <F1> <ESC>
+"nnoremap <F1> <ESC>
+"vnoremap <F1> <ESC>
+nnoremap <tab> %
+vnoremap <tab> %
+let mapleader=','                       "mapleader:set <leader> key,default(\)
+nnoremap <leader><space> :noh<cr>
+"nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>   "strip all trailing whitespace in the current file
+"for plugin Ack
+nnoremap <leader>f :Ack                
+"}
 
 "plugin Vundle
 "{
-
     "set nocompatible              " be iMproved, required
     "filetype off                  " required
     
@@ -43,12 +108,13 @@ let mapleader=","                       "设置前导按键<leader>
     Plugin 'majutsushi/tagbar'
     "Plugin 'bling/vim-airline'
     Plugin 'vim-airline/vim-airline'
-    Plugin 'kien/ctrlp.vim'             "全局搜索
+    "Plugin 'kien/ctrlp.vim'             "文件搜索
     Plugin 'Valloric/YouCompleteMe'
     "Plugin 'vim-airline/vim-airline-themes'
-    "Plugin 'scrooloose/nerdtree'       "暂时觉得没什么必要
+    Plugin 'scrooloose/nerdtree'       
     "Plugin 'Lokaltog/vim-powerline'
     "Plugin 'taglist.vim'               "tagbar似乎更好用
+    Plugin 'mileszs/ack.vim'
     " The following are examples of different formats supported.
     " Keep Plugin commands between vundle#begin/end.
     " plugin on GitHub repo
@@ -95,55 +161,62 @@ let mapleader=","                       "设置前导按键<leader>
 "plugin TagBar
 "{
     nmap <silent><F2> :Tagbar<cr>           "设置快捷键F3(禁止回显)打开/隐藏窗口
-    let g:tagbar_ctags_bin = 'ctags'        "//TODO 不设置似乎也没什么问题?
+    "let g:tagbar_ctags_bin = 'ctags'        "//TODO 不设置似乎也没什么问题?
     let g:tagbar_width=32                   "设置窗体宽度
     let g:tagbar_left=1                     "窗体显示在左边,默认在右
+    let g:tagbar_autoclose=1                "每次选择一个tag后自动关闭(挺有用的)
     "autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx call tagbar#autoopen()    "c/c++自动开启
 "}
 
 "plugin vim-airline
 "{
-   set t_Co=256                             "开启256色
-   set laststatus=2                         "开启状态栏，默认为1(关闭)
-   "let g:airline_theme="molokai"
-   " "打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件
-   let g:airline#extensions#tabline#enabled = 1
-   let g:airline#extensions#tabline#buffer_nr_show = 1
-   nnoremap <C-s-tab> :bp<CR>
-   " 使用powerline打过补丁的字体  
-   "let g:airline_powerline_fonts=1     "TODO:增加此行Tab栏有箭头比较好看，但左下角有乱码(方框内问题)
-   if !exists('g:airline_symbols')  
-        let g:airline_symbols={}  
-   endif 
-   " powerline symbols
-   let g:airline_left_sep = ''
-   let g:airline_left_alt_sep = ''
-   let g:airline_right_sep = ''
-   let g:airline_right_alt_sep = ''
-   let g:airline_symbols.branch = ''
-   let g:airline_symbols.readonly = ''
-   let g:airline_symbols.linenr = ''
-  
-   " 关闭空白符检测  
-   let g:airline#extensions#whitespace#enabled = 0
-   let g:airline#extensions#whitespace#symbol = '!'
+    set t_Co=256                             "开启256色
+    set laststatus=2                         "开启状态栏，默认为1(关闭)
+    "let g:airline_theme="molokai"
+    " "打开tabline功能,方便查看Buffer和切换,省去了minibufexpl插件
+    let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#buffer_nr_show = 1
+    nnoremap <C-S-N> :bn<CR>                        
+    nnoremap <C-S-P> :bp<CR>
+    " 使用powerline打过补丁的字体  
+    "let g:airline_powerline_fonts=1     "TODO:增加此行Tab栏有箭头比较好看，但左下角有乱码(方框内问题)
+    if !exists('g:airline_symbols')  
+         let g:airline_symbols={}  
+    endif 
+    " powerline symbols
+    let g:airline_left_sep = ''
+    let g:airline_left_alt_sep = ''
+    let g:airline_right_sep = ''
+    let g:airline_right_alt_sep = ''
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = ''
+   
+    " 关闭空白符检测  
+    let g:airline#extensions#whitespace#enabled = 0
+    let g:airline#extensions#whitespace#symbol = '!'
 "}
 
 "plugin NERDTree
 "{
-   " nmap <silent><F3> :NERDTreeToggle<CR>
-   " "退出最后一个窗口时自动关闭
-   " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") &&b:NERDTreeType == "primary") | q | endif
-   " let NERDTreeWinPos='left'
-   " let NERDTreeWinSize=30
-   " let NERDTreeDirArrows=0             "显示+号，默认为>
+   nmap <silent><F3> :NERDTreeToggle<CR>
+   "退出最后一个窗口时自动关闭(不好使)
+   "autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") &&b:NERDTreeType == "primary") | q | endif
+   let NERDTreeQuitOnOpen=1             "打开一个文件后就自动关闭
+   let NERDTreeWinPos='left'
+   let NERDTreeWinSize=30
+   let NERDTreeDirArrows=0              "显示+号，默认为>
 "}
 
+"暂时感觉不需要此功能，决定通过Win下的SourceInsight配合使用
+"此插件功能大概相当于ctrl+o的功能
 "plugin ctrlp
 "{
-    let g:ctrlp_working_path_mode = 'ra'
-    set wildignore+=*/tmp/*,*/node_modules/*,*.so,*.swp,*.zip     
-    let g:ctrlp_custom_ignore = {'dir':  '\v[\/]\.(git|hg|svn)$', 'file': '\v\.(exe|so|dll)$'}
+   " let g:ctrlp_map = '<C-B>'           "可修改打开的快捷键(默认为<C-P>
+   " let g:ctrlp_cmd = 'CtrlP'
+   " let g:ctrlp_working_path_mode = 'ra'
+   " set wildignore+=*/tmp/*,*/node_modules/*,*.so,*.swp,*.zip     
+   " let g:ctrlp_custom_ignore = {'dir':  '\v[\/]\.(git|hg|svn)$', 'file': '\v\.(exe|so|dll)$'}
 "}
 
 "plugin YouCompleteMe
@@ -159,4 +232,10 @@ let mapleader=","                       "设置前导按键<leader>
     " nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
     " nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
     " nmap <F4> :YcmDiags<CR>
+"}
+
+"plugin Ack
+"{
+    "$ sudo yum -y install the_silver_searcher
+    let g:ackprg = 'ag --nogroup --nocolor --column'
 "}
